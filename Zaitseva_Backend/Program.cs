@@ -1,4 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using Zaitseva_Backend.Models;
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<TourContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TourContext")));
 
 // Add services to the container.
 
@@ -6,6 +13,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//builder.Services.AddTransient<IAllTour, MocksTour>();
+//builder.Services.AddTransient<IAgencie, MockAgency>();
 
 var app = builder.Build();
 
@@ -23,3 +33,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
