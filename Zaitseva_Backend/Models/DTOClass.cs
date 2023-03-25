@@ -30,18 +30,11 @@ namespace Zaitseva_Backend.Models
             public int TourId { get; set; }
             public string TourName { get; set; }
             public string TourDescription { get; set; }
-            public string TourType
-            {
-                get
-                {
-                    return "Hiiiii";
-                }
-                set { }
-            }
+            public string TourType { get; set; }
             public string TourCountry { get; set; }
             public DateTime TourDate { get; set; }
             public double TourPriсe { get; set; }
-            public bool isHOT => (TourDate - DateTime.Now) < TimeSpan.FromDays(5); //?????????????????????????????????????
+            //public bool isHOT => (TourDate - DateTime.Now) < TimeSpan.FromDays(5); //?????????????????????????????????????
 
             public static explicit operator TourDTO(Tour tour) {
                 TourDTO tour1 = new TourDTO();
@@ -50,6 +43,9 @@ namespace Zaitseva_Backend.Models
                 tour1.TourPriсe = tour.TourPriсe;
                 tour1.TourDate = tour.TourDate;
                 tour1.TourDescription = tour.TourDescription;
+                tour1.TourCountry = tour.TourCountry;
+                tour1.TourType = tour.TourType;
+                //tour1.isHOT = tour.isHOT;
                 return tour1;
             }
         }

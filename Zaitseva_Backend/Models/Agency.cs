@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 
 namespace Zaitseva_Backend.Models
@@ -41,7 +42,17 @@ namespace Zaitseva_Backend.Models
         List<Tour> SelectTour()
         {
             return Tours;
-           
+        }
+
+        public static explicit operator Agency(DTOClass.AgencyDTO agencydto)
+        {
+            Agency agency = new Agency();
+            agency.AgencyId = agencydto.AgencyId;
+            agency.AgencyName = agencydto.AgencyName;
+            agency.TelephoneNumber = agencydto.TelephoneNumber; 
+            agency.Address = agencydto.Address;
+            List<Tour> Tours  = new List<Tour>();
+            return agency;
         }
     }
 }

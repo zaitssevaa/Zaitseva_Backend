@@ -12,30 +12,13 @@ using static Zaitseva_Backend.Models.DTOClass;
 
 namespace Zaitseva_Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
 
 
     public class AgenciesController : ControllerBase
     {
-        //private readonly IAllTour _allTour;
-        //private readonly IAgencie _allAgencie;
 
-        //public AgenciesController(IAllTour IALLTour, IAgencie IAgen)
-        //{
-        //    _allTour = IALLTour;
-        //    _allAgencie = IAgen;
-        //}
-
-        //public ViewResult List(){
-        //    var tour = _allTour.AllTours;
-        //    return View(tour);
-        //}
-
-        //private ViewResult View(IEnumerable<Tour> tour)
-        //{
-        //    throw new NotImplementedException();
-        //}
         private readonly TourContext _context;
 
         public AgenciesController(TourContext context)
@@ -73,7 +56,18 @@ namespace Zaitseva_Backend.Controllers
             return agencyDTO;
         }
 
-
+        [HttpGet]
+       // [Route("{price}")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAgencylocal(string address)
+        {
+            var agency = await _context.Agency.Where(a => a.Address.StartsWith(address)).Select(a => a.AgencyName).ToListAsync();
+            if (agency == null)
+            {
+                return NotFound();
+            }
+            return agency;
+        }
+        
         // PUT: api/Agencies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -108,12 +102,16 @@ namespace Zaitseva_Backend.Controllers
         // POST: api/Agencies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Agency>> PostAgency(Agency agency)
+        public async Task<ActionResult<Agency>> PostAgency(AgencyDTO agencyDTO)
         {
             if (_context.Agency == null)
             {
                 return Problem("Entity set 'TourContext.Agency'  is null.");
             }
+            // приведение типов
+            Agency agency = new Agency();
+            agency = (Agency)agencyDTO;
+
             _context.Agency.Add(agency);
             await _context.SaveChangesAsync();
 
