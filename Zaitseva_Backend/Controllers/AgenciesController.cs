@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,6 @@ namespace Zaitseva_Backend.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-
 
     public class AgenciesController : ControllerBase
     {
@@ -56,18 +57,34 @@ namespace Zaitseva_Backend.Controllers
             return agencyDTO;
         }
 
-        [HttpGet]
-       // [Route("{price}")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAgencylocal(string address)
+       // [HttpGet]
+       // public async Task<ActionResult<IEnumerable<string>>> GetAgencylocal(string address)
+       // {
+       //     var agency = await _context.Agency.Where(a => a.Address.StartsWith(address)).Select(a => a.AgencyName).ToListAsync();
+       //     if (agency == null)
+       //     {
+       //         return NotFound();
+       //     }
+       //     return agency;
+       // }
+
+        
+        [HttpPut("{idagency}")]
+        public async Task<ActionResult<IEnumerable<IActionResult>>> GetAgencylocal(int idagency, int idtour)
         {
-            var agency = await _context.Agency.Where(a => a.Address.StartsWith(address)).Select(a => a.AgencyName).ToListAsync();
-            if (agency == null)
+            Agency agency = _context.Agency.Where(a => a.AgencyId== idagency).FirstOrDefault();
+            Tour tour = _context.Tour.Where(t => t.TourId== idtour).FirstOrDefault();
+            agency.AddTours(tour);
+            // var agency = await _context.Agency.(a => a.idagency.address).ToListAsync();
+            await _context.SaveChangesAsync();
+            if (agency == null || tour == null)
             {
                 return NotFound();
             }
-            return agency;
+            else 
+            return NoContent();
         }
-        
+
         // PUT: api/Agencies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

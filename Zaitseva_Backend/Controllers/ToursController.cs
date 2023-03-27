@@ -78,20 +78,6 @@ namespace Zaitseva_Backend.Controllers
             return tours;
         }
 
-        //[HttpGet]
-        //[Route("{id}")]
-        //public async Task<ActionResult<IEnumerable<Tour>>> GetAllAgency(int id)
-        //{
-        //    var AllAgency = await _context.Agency.Where(a => a.AgencyTourAgencyid == id).ToListAsync();
-
-        //    if (AllAgency == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return AllAgency;
-        //}
-
         // GET: api/Tours/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TourDTO>> GetTour(int id)

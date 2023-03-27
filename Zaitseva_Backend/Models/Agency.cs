@@ -11,7 +11,7 @@ namespace Zaitseva_Backend.Models
         public string AgencyName { get; set;}
         public string Address { get; set;}
         public int TelephoneNumber { get; set;}
-        public List<Tour> Tours { get; set; } // list? - 
+        public List<Tour> Tours { get; set; } = new List<Tour>(); // list? - 
 
         public void CreateAgencyy(string Name, string Address, int Phone)
         {
