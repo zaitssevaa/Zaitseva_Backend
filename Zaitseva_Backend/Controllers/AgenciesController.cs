@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ using static Zaitseva_Backend.Models.DTOClass;
 namespace Zaitseva_Backend.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [ApiController]
+    //[ApiController]
 
     public class AgenciesController : ControllerBase
     {
@@ -29,7 +30,7 @@ namespace Zaitseva_Backend.Controllers
 
         // GET: api/Agencies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Agency>>> GetAgency()
+        public async Task<ActionResult<IEnumerable<Agency>>> GetAllAgency()
         {
             if (_context.Agency == null)
             {
@@ -40,8 +41,9 @@ namespace Zaitseva_Backend.Controllers
 
         // GET: api/Agencies/5
         [HttpGet("{id}")]
+        //[Authorize]
         public async Task<ActionResult<AgencyDTO>> GetAgency(int id)
-        {
+        { 
             if (_context.Agency == null)
             {
                 return NotFound();
@@ -57,27 +59,70 @@ namespace Zaitseva_Backend.Controllers
             return agencyDTO;
         }
 
-       // [HttpGet]
-       // public async Task<ActionResult<IEnumerable<string>>> GetAgencylocal(string address)
-       // {
-       //     var agency = await _context.Agency.Where(a => a.Address.StartsWith(address)).Select(a => a.AgencyName).ToListAsync();
-       //     if (agency == null)
-       //     {
-       //         return NotFound();
-       //     }
-       //     return agency;
-       // }
+        [HttpGet("{id}")]
+        //[Authorize]
+        public async Task<ActionResult<IEnumerable<Agency>>> GetAgencyTour(int id)
+        {
+            if (_context.Agency == null)
+            {
+                return NotFound();
+            }
+            var agency = _context.Agency.Include(t => t.Tours).Where(a => a.AgencyId == id).ToListAsync();
+            return await agency;
+        }
 
-        
+
+        [HttpGet("{id},Country")]
+        //[Authorize]
+        public async Task<ActionResult<IEnumerable<Agency>>> AgencyCountry(int id, string country)
+        {
+            if (_context.Agency == null)
+            {
+                return NotFound();
+            }
+            var agency = _context.Agency.Include(t => t.Tours.Where(t => t.TourCountry == country)).Where(a => a.AgencyId == id).ToListAsync();
+            //foreach (tour in agency.Tours)
+            //var tours = agency.Tours.Where(t => t.TourCountry == CountryName).ToListAsync();
+            return await agency;
+        }
+
+
+        [HttpGet]
+        //[Authorize]
+        public async Task<ActionResult<IEnumerable<string>>> GetAgencylocal(string address)
+        {
+            var agency = await _context.Agency.Where(a => a.Address.StartsWith(address)).Select(a => a.AgencyName).ToListAsync();
+            if (agency == null)
+            {
+                return NotFound();
+            }
+            return agency;
+        }
+
+
         [HttpPut("{idagency}")]
-        public async Task<ActionResult<IEnumerable<IActionResult>>> GetAgencylocal(int idagency, int idtour)
+        //[Authorize(Roles = "admin")]
+        public async Task<ActionResult<IEnumerable<IActionResult>>> PutTourAddAgency(int idagency, List<int> idtours)
         {
             Agency agency = _context.Agency.Where(a => a.AgencyId== idagency).FirstOrDefault();
-            Tour tour = _context.Tour.Where(t => t.TourId== idtour).FirstOrDefault();
-            agency.AddTours(tour);
+            var touragency = _context.Agency.Include(a => a.Tours).FirstOrDefault(a => a.AgencyId == idagency);
+            foreach (int idtour in idtours)
+            {
+                if (touragency.Tours.Any(t => t.TourId == idtour))
+                    continue;
+                else
+                {
+                    Tour tour = _context.Tour.Where(t => t.TourId == idtour).FirstOrDefault();
+                    if (tour == null)
+                    {
+                        return NotFound();
+                    }
+                    tour.AddAgency(agency);
+                }
+            }
             // var agency = await _context.Agency.(a => a.idagency.address).ToListAsync();
             await _context.SaveChangesAsync();
-            if (agency == null || tour == null)
+            if (agency == null)
             {
                 return NotFound();
             }
@@ -85,9 +130,34 @@ namespace Zaitseva_Backend.Controllers
             return NoContent();
         }
 
+        [HttpPut("{idagency}")]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<IEnumerable<IActionResult>>> PutTourDeleteAgency(int idagency, List<int> idtours)
+        {
+            Agency agency = _context.Agency.Where(a => a.AgencyId == idagency).FirstOrDefault();
+            foreach (int idtour in idtours)
+            {
+                Tour tour = _context.Tour.Include(a => a.AgencyTour).Where(t => t.TourId == idtour).FirstOrDefault();
+                if (tour == null)
+                {
+                    return NotFound();
+                }
+                agency.DeleteTours(tour);
+            }
+            // var agency = await _context.Agency.(a => a.idagency.address).ToListAsync();
+            await _context.SaveChangesAsync();
+            if (agency == null)
+            {
+                return NotFound();
+            }
+            else
+                return NoContent();
+        }
+
         // PUT: api/Agencies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> PutAgency(int id, Agency agency)
         {
             if (id != agency.AgencyId)
@@ -119,6 +189,7 @@ namespace Zaitseva_Backend.Controllers
         // POST: api/Agencies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<Agency>> PostAgency(AgencyDTO agencyDTO)
         {
             if (_context.Agency == null)
@@ -137,6 +208,7 @@ namespace Zaitseva_Backend.Controllers
 
         // DELETE: api/Agencies/5
         [HttpDelete("{id}")]
+        //[Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteAgency(int id)
         {
             if (_context.Agency == null)

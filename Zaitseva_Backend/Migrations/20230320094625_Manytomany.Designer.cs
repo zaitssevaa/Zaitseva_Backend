@@ -94,9 +94,6 @@ namespace Zaitseva_Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                   // b.Property<bool>("isHOT")
-                    //   .HasColumnType("bit");
-
                     b.HasKey("TourId");
 
                     b.ToTable("Tour");

@@ -11,7 +11,7 @@ namespace Zaitseva_Backend.Models
         public string AgencyName { get; set;}
         public string Address { get; set;}
         public int TelephoneNumber { get; set;}
-        public List<Tour> Tours { get; set; } = new List<Tour>(); // list? - 
+        public List<Tour> Tours { get; set; } // list? - 
 
         public void CreateAgencyy(string Name, string Address, int Phone)
         {
@@ -19,21 +19,15 @@ namespace Zaitseva_Backend.Models
             this.Address = Address;
             TelephoneNumber = Phone;
         }
-        public void UpdateName(string NewAgencyName)
+        public Agency()
         {
-            AgencyName = NewAgencyName;
+            List<Tour> Tours = new List<Tour>();
         }
-        public void UpdateAddress(string NewAddress)
+        public void AddTours(Tour NewTours)
         {
-            Address = NewAddress;
-        }
-        public void UpdateTelephoneNumber(int NewTelephoneNumber)
-        {
-            TelephoneNumber = NewTelephoneNumber;
-        }
-        public void AddTours(Tour NeeTours)
-        {
-            Tours.Add(NeeTours);
+            if (Tours == null)
+            Tours = new List<Tour>();
+            Tours.Add(NewTours);
         }
         public void DeleteTours(Tour WasteTours)
         {

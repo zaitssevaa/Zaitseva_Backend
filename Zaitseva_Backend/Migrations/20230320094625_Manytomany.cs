@@ -38,7 +38,6 @@ namespace Zaitseva_Backend.Migrations
                     TourCountry = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TourDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TourPriсe = table.Column<double>(type: "float", nullable: false),
-                  //  isHot = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

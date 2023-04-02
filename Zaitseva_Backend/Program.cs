@@ -1,11 +1,36 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using Zaitseva_Backend.Models;
-
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<TourContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TourContext")));
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = AuthOptions.Issuer,
+
+        ValidateAudience = true,
+        ValidAudience = AuthOptions.Audience,
+
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = AuthOptions.SigningKey,
+
+        ValidateLifetime = true,
+    };
+}
+   );
 
 // Add services to the container.
 
@@ -28,10 +53,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+
 
 
