@@ -33,6 +33,7 @@ namespace Zaitseva_Backend.Models
             public string TourType { get; set; }
             public string TourCountry { get; set; }
             public DateTime TourDate { get; set; }
+            public uint TourDuration { get; set; }
             public double TourPriсe { get; set; }
 
             public static explicit operator TourDTO(Tour tour) {
@@ -44,6 +45,7 @@ namespace Zaitseva_Backend.Models
                 tour1.TourDescription = tour.TourDescription;
                 tour1.TourCountry = tour.TourCountry;
                 tour1.TourType = tour.TourType;
+                tour1.TourDuration = tour.TourDuration;
                 return tour1;
             }
         }

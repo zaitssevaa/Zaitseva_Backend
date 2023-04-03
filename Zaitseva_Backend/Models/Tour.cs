@@ -8,6 +8,7 @@
         public string TourType { get; set; }
         public string TourCountry { get; set;}
         public DateTime TourDate { get; set;}
+        public uint TourDuration { get; set; }
         public double TourPriсe { get; set;}
         public List<Agency> AgencyTour { get; set;}
 

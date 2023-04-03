@@ -40,15 +40,15 @@ namespace Zaitseva_Backend.Controllers
         }
 
         // GET: api/Agencies/5
-        [HttpGet("{id}")]
+        [HttpGet("Nmae")]
         //[Authorize]
-        public async Task<ActionResult<AgencyDTO>> GetAgency(int id)
+        public async Task<ActionResult<AgencyDTO>> GetAgency(string Name)
         { 
             if (_context.Agency == null)
             {
                 return NotFound();
             }
-            var agency = await _context.Agency.FindAsync(id);
+            var agency = await _context.Agency.Where(a => a.AgencyName.Contains(Name)).FirstOrDefaultAsync();
 
             if (agency == null)
             {
@@ -87,8 +87,9 @@ namespace Zaitseva_Backend.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{id},Country")]
         //[Authorize]
+
         public async Task<ActionResult<IEnumerable<string>>> GetAgencylocal(string address)
         {
             var agency = await _context.Agency.Where(a => a.Address.StartsWith(address)).Select(a => a.AgencyName).ToListAsync();
@@ -131,7 +132,7 @@ namespace Zaitseva_Backend.Controllers
         }
 
         [HttpPut("{idagency}")]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<IActionResult>>> PutTourDeleteAgency(int idagency, List<int> idtours)
         {
             Agency agency = _context.Agency.Where(a => a.AgencyId == idagency).FirstOrDefault();
@@ -157,7 +158,7 @@ namespace Zaitseva_Backend.Controllers
         // PUT: api/Agencies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize(Roles = "admin")]
+       //[Authorize(Roles = "admin")]
         public async Task<IActionResult> PutAgency(int id, Agency agency)
         {
             if (id != agency.AgencyId)
